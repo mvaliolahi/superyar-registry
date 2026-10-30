@@ -1,0 +1,58 @@
+{
+  "sdl": "1.2",
+  "kind": "operation",
+  "retailer": "digikalajet",
+  "id": "loginStart",
+  "capability": "loginStart",
+  "version": "2026.10.30-2",
+  "requiresEngine": 2,
+  "evidence": "observed",
+  "params": {
+    "phone": {
+      "type": "string",
+      "required": true,
+      "maxLength": 11
+    }
+  },
+  "request": {
+    "method": "POST",
+    "host": "api",
+    "path": "/user/login-register/",
+    "body": {
+      "phone": "{{param.phone}}"
+    }
+  },
+  "response": {
+    "expectStatus": [
+      200
+    ],
+    "item": {
+      "path": "$.data"
+    }
+  },
+  "mapping": {
+    "target": "LoginChallenge",
+    "fields": {
+      "otpToken": {
+        "path": "@.token",
+        "transform": [
+          "toString"
+        ]
+      },
+      "resendSeconds": {
+        "path": "@.sms_ttl",
+        "transform": [
+          "toLong"
+        ]
+      },
+      "captchaRequired": {
+        "path": "@.needs_captcha",
+        "transform": [
+          "toBool"
+        ],
+        "required": true
+      }
+    }
+  },
+  "notes": "Sends the OTP SMS. Live 2026-10-30 (maintainer's own number, PoC spike): HTTP 200, data keys phone_number, token, sms_ttl (120), needs_captcha (false); the answer body was not saved, so no fixture yet. `otpToken` goes to loginVerify as auth.otpToken. Respect resendSeconds before asking again. needs_captcha true = stop (ARD 11 §2). DigiCDN may answer 307 + digicdn_cookie on this path: the client's cookie jar must replay once (api-digikalajet-account-cart.md addendum). Jet's website (HAR 2026-10-30) sent the same body {phone} and got the same answer keys (needs_captcha false)."
+}

@@ -1,0 +1,103 @@
+{
+  "sdl": "1.2",
+  "kind": "operation",
+  "retailer": "digikalajet",
+  "id": "cartView",
+  "capability": "cartView",
+  "version": "2026.10.30-2",
+  "requiresEngine": 2,
+  "auth": "user",
+  "evidence": "observed",
+  "request": {
+    "method": "GET",
+    "host": "api",
+    "path": "/cart/",
+    "query": {
+      "latitude": "{{ctx.lat | format:'%.6f'}}",
+      "longitude": "{{ctx.lng | format:'%.6f'}}"
+    }
+  },
+  "response": {
+    "expectStatus": [
+      200
+    ],
+    "items": {
+      "parentPath": "$.data.cart_shipments[*]",
+      "childPath": "@.cart_items.items[*]",
+      "bind": "parent"
+    }
+  },
+  "mapping": {
+    "target": "CartLine",
+    "fields": {
+      "storeId": {
+        "path": "parent.shop.id",
+        "transform": [
+          "toString"
+        ],
+        "required": true
+      },
+      "cartId": {
+        "path": "parent.hash_id",
+        "transform": [
+          "toString"
+        ]
+      },
+      "retailerProductId": {
+        "path": "@.product.id",
+        "transform": [
+          "toString"
+        ],
+        "required": true
+      },
+      "title": {
+        "path": "@.product.title",
+        "transform": [
+          "normalizePersian"
+        ]
+      },
+      "quantity": {
+        "path": "@.quantity",
+        "transform": [
+          "toLong"
+        ],
+        "required": true
+      },
+      "linePayableRial": {
+        "path": "@.price.payable_price",
+        "transform": [
+          "toLong",
+          "unit:rial"
+        ]
+      },
+      "cartPayableRial": {
+        "path": "parent.price.cart_price",
+        "transform": [
+          "toLong",
+          "unit:rial"
+        ]
+      },
+      "cartTotalRial": {
+        "path": "parent.price.payable_price",
+        "transform": [
+          "toLong",
+          "unit:rial"
+        ]
+      },
+      "minOrderRial": {
+        "path": "parent.shop.cart_close_limit",
+        "transform": [
+          "toLong",
+          "unit:rial"
+        ]
+      },
+      "addressId": {
+        "path": "parent.address.id",
+        "transform": [
+          "toString"
+        ]
+      }
+    }
+  },
+  "notes": "One shipment per shop: hash_id is the id every per-shipment path needs (cart.shipmentId). cart_items is an object {items, amazing_items, non_amazing_items}; `items` holds all lines (Observed). Lat/lng matter only in location mode; with a default address the server uses it. Totals (live HAR 2026-10-30, cart/add answer): price.cart_price is the items payable after discounts (comparable with SuperYar's estimate); price.payable_price adds shipping_cost and preparation_cost (1,552,300 + 424,000 + 200,000 = 2,176,300)."
+}

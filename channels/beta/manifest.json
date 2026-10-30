@@ -1,0 +1,266 @@
+{
+  "kind": "manifest",
+  "schema": 1,
+  "channel": "beta",
+  "sequence": 1,
+  "publishedAt": "2026-10-30T17:51:04Z",
+  "expiresAt": "2026-12-29T17:51:04Z",
+  "minAppVersionCode": 1,
+  "signed": true,
+  "keyId": "reg-2026-a",
+  "bundles": [
+    {
+      "retailer": "digikalajet",
+      "version": "2026.10.30-1",
+      "requiresEngine": 2,
+      "files": [
+        {
+          "path": "retailers/digikalajet/operations/addressList.json",
+          "sha256": "5b20c28e490c37fe9f7582d41bd1b7465f6fda635fd3259b87a54cb07d187a8c",
+          "size": 1725
+        },
+        {
+          "path": "retailers/digikalajet/operations/addressSelect.json",
+          "sha256": "60493568446896a77e8e7f1f5b1a44c03df60e4ba734bf3970a6b54672dbffd9",
+          "size": 731
+        },
+        {
+          "path": "retailers/digikalajet/operations/addressSetDefault.json",
+          "sha256": "0d73f9a0d3c63f2cb515ce4d5fa293431d89889199c8fb47530dad9f8af17b2b",
+          "size": 770
+        },
+        {
+          "path": "retailers/digikalajet/operations/amazing.json",
+          "sha256": "0c029bd99cf41c2a003eda548e52e7afca60cd45d26b536e92cab767713de381",
+          "size": 3462
+        },
+        {
+          "path": "retailers/digikalajet/operations/cartFill.json",
+          "sha256": "e19433a3a276b0e1e7ac2f7a0a6a682993824e6c65deea91837501b5651443d3",
+          "size": 1388
+        },
+        {
+          "path": "retailers/digikalajet/operations/cartRemove.json",
+          "sha256": "982426fc7791ccc4d80575ac5148f694a7e9a6dfe75ee11ab183094de41597df",
+          "size": 704
+        },
+        {
+          "path": "retailers/digikalajet/operations/cartView.json",
+          "sha256": "d4fa6559c95254db703834aa595d6fed9a2f3b593ce18b940551ee9a10c937c9",
+          "size": 2617
+        },
+        {
+          "path": "retailers/digikalajet/operations/collectionProducts.json",
+          "sha256": "39b5d69428a8b7bc79728c2fe73bce1f1b5e1c53b356c40a7a0aacdadcbf8377",
+          "size": 3872
+        },
+        {
+          "path": "retailers/digikalajet/operations/collections.json",
+          "sha256": "809103d1d94dcc53a169bedbdb7eb7f23940d8702b65ea1fed25887b0fd75193",
+          "size": 1225
+        },
+        {
+          "path": "retailers/digikalajet/operations/handoff.json",
+          "sha256": "13831f7be4c2ebf9d52cad2bb7ca644f44b275beedc911a3dd22c9e58db34241",
+          "size": 526
+        },
+        {
+          "path": "retailers/digikalajet/operations/loginStart.json",
+          "sha256": "d120f5895cecaa2784802eff30bd0dbc37fb9fab31d1623ab39d6b7985f72099",
+          "size": 1609
+        },
+        {
+          "path": "retailers/digikalajet/operations/loginVerify.json",
+          "sha256": "c1d2b979756061e4681aeb25af28399fa3f78df5f3f6388960f3fa5cbfda7697",
+          "size": 1342
+        },
+        {
+          "path": "retailers/digikalajet/operations/productDetail.json",
+          "sha256": "58e00efbe74ca8d64afaaff9ccf4f9e097886ae4052fb0433281798de10c60b3",
+          "size": 2287
+        },
+        {
+          "path": "retailers/digikalajet/operations/resolveContext.json",
+          "sha256": "4fab8430cb3a5006c68416ce6b6967d403b1abca98ce7e251ef80afac320098a",
+          "size": 1124
+        },
+        {
+          "path": "retailers/digikalajet/operations/search.json",
+          "sha256": "f6e281dc41a72a18fe507fa485edbf4483d8c20986adbafb0fcd81dc8ab3b023",
+          "size": 3799
+        },
+        {
+          "path": "retailers/digikalajet/operations/searchInStore.json",
+          "sha256": "1453d505f1539d2c663b09ea4a038a37eb1fdd40cb97a1fa7f64abc263140384",
+          "size": 3105
+        },
+        {
+          "path": "retailers/digikalajet/operations/sessionRefresh.json",
+          "sha256": "215504974fc1153dec944ba86cab0fc8c882a34ea5f8f9ce9e568442926075bc",
+          "size": 1027
+        },
+        {
+          "path": "retailers/digikalajet/retailer.json",
+          "sha256": "29c1ab007ced1db1d7a49ae30c7233abc78e607a8e47576413961cb0c978b7a7",
+          "size": 3272
+        }
+      ]
+    },
+    {
+      "retailer": "okala",
+      "version": "2026.10.30-1",
+      "requiresEngine": 2,
+      "files": [
+        {
+          "path": "retailers/okala/operations/addressList.json",
+          "sha256": "409f0e15844cdf25eba39503172900708f4f82ef314a0c46154aa603d426a806",
+          "size": 2136
+        },
+        {
+          "path": "retailers/okala/operations/addressSelect.json",
+          "sha256": "cbb1c0ba525e4a9514dfba8218e62caa3fc2140b6236d20135e9131fdea109f3",
+          "size": 801
+        },
+        {
+          "path": "retailers/okala/operations/cartFill.json",
+          "sha256": "46120d35d0e7fb69604709b6d149ba21e3f35ef7769a67ef786747af402175f4",
+          "size": 2323
+        },
+        {
+          "path": "retailers/okala/operations/cartRemove.json",
+          "sha256": "a557b73cc72df5965a68ea84d5c07b2097496c5a91094a3bd07d5c0d9b853c65",
+          "size": 750
+        },
+        {
+          "path": "retailers/okala/operations/cartView.json",
+          "sha256": "fa4bc92d5dfed236207c45c38f6d7821a9a6be685edcf44c3de9f210919a471c",
+          "size": 2799
+        },
+        {
+          "path": "retailers/okala/operations/categories.json",
+          "sha256": "f2b78facea03621eb0c45dbdbe1f16385fa81c5968a14012faabf626fc1e9122",
+          "size": 1303
+        },
+        {
+          "path": "retailers/okala/operations/categoryProducts.json",
+          "sha256": "7574ee7424529dbd5a08c1e24e60b3e2c648c1d775b525e3568d6aacd64e7f99",
+          "size": 3524
+        },
+        {
+          "path": "retailers/okala/operations/handoff.json",
+          "sha256": "761ea9acad9e1266da2282baa1ef97d73f338472d5084869581034667ad8d9ac",
+          "size": 481
+        },
+        {
+          "path": "retailers/okala/operations/highestDiscount.json",
+          "sha256": "678d8448794b2fbadc409f8792ac948b2c564716d3ba27df56661193239059d3",
+          "size": 2958
+        },
+        {
+          "path": "retailers/okala/operations/listStores.json",
+          "sha256": "f295499746a7a131038ab63ed1f1fa65fb098d75c1f3065655fd325b5c877fb0",
+          "size": 2336
+        },
+        {
+          "path": "retailers/okala/operations/logout.json",
+          "sha256": "edb2dc7bb2376255475bafa81f5d4e0c4d11544d8904e346e5b4f3f06052bc1d",
+          "size": 526
+        },
+        {
+          "path": "retailers/okala/operations/productDetail.json",
+          "sha256": "b43130e557fb9c8f8480f1176cd2c52a67343738285275c783335747db8609f1",
+          "size": 2060
+        },
+        {
+          "path": "retailers/okala/retailer.json",
+          "sha256": "db887352aff13d3f69b32ca541eb931e6a7ae56bf5e37bdf6f9293ef10b79d31",
+          "size": 3828
+        }
+      ]
+    },
+    {
+      "retailer": "snappmarket",
+      "version": "2026.10.30-1",
+      "requiresEngine": 2,
+      "files": [
+        {
+          "path": "retailers/snappmarket/operations/addressList.json",
+          "sha256": "f4010e93532015401aa5d9d54fcda7502df98fedf44785eb9d1cd931f9e49445",
+          "size": 1813
+        },
+        {
+          "path": "retailers/snappmarket/operations/addressSelect.json",
+          "sha256": "1d8628edeb27e86339b20dcd23e17d95108a42afebc7a165de20764fe78c4f13",
+          "size": 835
+        },
+        {
+          "path": "retailers/snappmarket/operations/cartFill.json",
+          "sha256": "f6eae59a636bed6b5e5bce4e77a34a57f6bfd5128b2150746232ba5525d61b64",
+          "size": 3020
+        },
+        {
+          "path": "retailers/snappmarket/operations/cartFillNew.json",
+          "sha256": "84de5f20dc1c43fdc61341e9be8a148f6b10afc587c04522fb38a2ab75344c21",
+          "size": 3231
+        },
+        {
+          "path": "retailers/snappmarket/operations/cartRemove.json",
+          "sha256": "43bddac514fb79e1e9901d3837b37f413f1462303c6baadcc824a448643d4981",
+          "size": 858
+        },
+        {
+          "path": "retailers/snappmarket/operations/cartView.json",
+          "sha256": "e1651e87f1da5ba1ed28f2c0d84f16d7376749358db2594e3e624bcfe923f541",
+          "size": 2421
+        },
+        {
+          "path": "retailers/snappmarket/operations/handoff.json",
+          "sha256": "72559793866a45e16e50009371575d8be199381791faf08930944f75cf1f6a21",
+          "size": 382
+        },
+        {
+          "path": "retailers/snappmarket/operations/listStores.json",
+          "sha256": "9b6585a3fd2fa64be2e8050a7d5a210afb2a790a5370e90fa891cff14b96ab21",
+          "size": 2002
+        },
+        {
+          "path": "retailers/snappmarket/operations/logout.json",
+          "sha256": "649748e2fca5b041a88175cd8d44284584eb0b9f5a9140b19470993508e30a73",
+          "size": 576
+        },
+        {
+          "path": "retailers/snappmarket/operations/productDetail.json",
+          "sha256": "ecd09d63ab5c6934e72e662daf71b524db2b67d29eebfa697f1a37ea0236b510",
+          "size": 2145
+        },
+        {
+          "path": "retailers/snappmarket/operations/search.json",
+          "sha256": "7bf42e7f66c8d99bf717ff16eefbe67d9876116c6d408707e07d024d7ec47167",
+          "size": 2709
+        },
+        {
+          "path": "retailers/snappmarket/retailer.json",
+          "sha256": "4d183108487e9d0bb79b8f88f54dc0a2d3dc16c33843da13ab34d98e1e2c162d",
+          "size": 3668
+        }
+      ]
+    }
+  ],
+  "tables": [
+    {
+      "name": "unit-aliases",
+      "version": "1",
+      "path": "tables/unit-aliases.json",
+      "sha256": "827f7729128808e5fe8e6df7c25009f173aaa6bf0233f69b30bd666e618aeadd"
+    }
+  ],
+  "killSwitches": {},
+  "revoked": [],
+  "revokedKeyIds": [],
+  "params": {
+    "splitMinSavingRial": 300000,
+    "splitMinSavingRatio": 0.05,
+    "missingLinePenaltyRial": 500000,
+    "missingLinePenaltyAlpha": 1.5
+  }
+}

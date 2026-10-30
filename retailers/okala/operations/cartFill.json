@@ -1,0 +1,95 @@
+{
+  "sdl": "1.2",
+  "kind": "operation",
+  "retailer": "okala",
+  "id": "cartFill",
+  "capability": "cartFill",
+  "version": "2026.10.30-2",
+  "requiresEngine": 2,
+  "auth": "user",
+  "evidence": "verified",
+  "request": {
+    "method": "POST",
+    "host": "api",
+    "path": "/api/Basket/v2/ShoppingCart/AddToShoppingCart",
+    "headers": {
+      "source": "okala",
+      "ui-version": "2.0"
+    },
+    "perItem": true,
+    "pacingMs": 400,
+    "body": {
+      "storeId": "{{store.storeId | number}}",
+      "productId": "{{item.retailerProductId | number}}",
+      "quantity": "{{item.qty | number}}",
+      "isSupplier": false,
+      "replaceItemMethodCode": -1,
+      "sectorId": "0",
+      "sectorPartId": "0",
+      "productStoreId": "0",
+      "deliveryMethod": "Delivery",
+      "isMultiStore": true
+    }
+  },
+  "response": {
+    "expectStatus": [
+      200
+    ],
+    "items": {
+      "path": "$.data.items[*]"
+    }
+  },
+  "mapping": {
+    "target": "CartLine",
+    "fields": {
+      "storeId": {
+        "path": "$.data.storeId",
+        "transform": [
+          "toString"
+        ],
+        "required": true
+      },
+      "retailerProductId": {
+        "path": "@.productId",
+        "transform": [
+          "toString"
+        ],
+        "required": true
+      },
+      "quantity": {
+        "path": "@.quantity",
+        "transform": [
+          "toLong"
+        ],
+        "required": true
+      },
+      "cartPayableRial": {
+        "path": "$.data.totalOkPrice",
+        "transform": [
+          "toLong",
+          "unit:rial"
+        ]
+      }
+    }
+  },
+  "fixtures": [
+    {
+      "file": "fixtures/cartFill.200.json",
+      "bind": {
+        "store": {
+          "storeId": "11178"
+        }
+      },
+      "expect": {
+        "count": 1,
+        "first": {
+          "storeId": "11178",
+          "retailerProductId": "6373",
+          "quantity": 1,
+          "cartPayableRial": 1193500
+        }
+      }
+    }
+  ],
+  "notes": "Live HAR 2026-10-30 used AddToShoppingCart (slim answer: data.items + totalOkPrice). The store/PLP sibling add-item-return-cart returns the full cart in data.cart; SuperYar prefers this captured path and follows with cartView for the full read-back. Body matches Okala's client. Respect maxOrderQty before sending; errors come back as success:false + errorMessage."
+}

@@ -1,0 +1,47 @@
+{
+  "sdl": "1.1",
+  "kind": "operation",
+  "retailer": "okala",
+  "capability": "listStores",
+  "version": "2026.10.30-1",
+  "requiresEngine": 1,
+  "request": {
+    "method": "GET",
+    "host": "api",
+    "path": "/api/opex/v4/stores/nearby",
+    "query": { "latitude": "{{ctx.lat | format:'%.6f'}}", "longitude": "{{ctx.lng | format:'%.6f'}}" },
+    "timeoutMs": 10000
+  },
+  "pagination": { "style": "none" },
+  "response": {
+    "expectStatus": [200],
+    "items": { "path": "$.data.stores[*]" },
+    "cache": { "ttlSeconds": 900, "scope": "context" }
+  },
+  "mapping": {
+    "target": "RetailerStore",
+    "fields": {
+      "storeId": { "path": "@.storeId", "transform": ["toString"], "required": true },
+      "name": { "path": "@.storeName", "transform": ["trim", "normalizePersian"], "required": true },
+      "isOpen": { "path": "@.earliestSlot.isClosed", "transform": ["toBool", "not"] },
+      "etaMinutes": { "path": "@.onDemandEta", "transform": ["durationToMinutes"] },
+      "rating": { "path": "@.rate", "transform": ["toDouble"] },
+      "distanceKm": { "path": "@.distance", "transform": ["toDouble"] },
+      "deliveryTerms.feeRial": { "path": "@.deliveryPrice", "transform": ["toLong", "unit:rial"] },
+      "deliveryTerms.serviceFeeRial": { "path": "@.operationPrice", "transform": ["toLong", "unit:rial"] },
+      "deliveryTerms.packagingFeeRial": { "path": "@.packagingPrice", "transform": ["toLong", "unit:rial"] },
+      "extras.storeCategoryType": { "path": "@.storeCategoryType", "transform": ["toString"] },
+      "extras.cityId": { "path": "$.data.cityId", "transform": ["toString"] }
+    }
+  },
+  "notes": "One call returns all stores in range (83 at the fixture point, incl. bakeries; filter by extras.storeCategoryType). operationPrice is the «هزینه خدمات» service fee per the site's own strings. Fee units are Inferred Rial, matching the product prices. Minimum order: Unknown (not in this response).",
+  "fixtures": [
+    {
+      "file": "fixtures/listStores.200.json",
+      "expect": {
+        "count": 3,
+        "first": { "storeId": "10693", "name": "ماکان", "isOpen": true, "etaMinutes": 75, "rating": 4.5, "deliveryTerms.feeRial": 0, "deliveryTerms.serviceFeeRial": 130000, "deliveryTerms.packagingFeeRial": 40000, "extras.storeCategoryType": "SuperMarket" }
+      }
+    }
+  ]
+}

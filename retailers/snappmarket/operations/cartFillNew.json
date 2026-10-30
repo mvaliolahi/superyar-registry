@@ -1,0 +1,119 @@
+{
+  "sdl": "1.2",
+  "kind": "operation",
+  "retailer": "snappmarket",
+  "id": "cartFillNew",
+  "capability": "cartFill",
+  "version": "2026.10.30-2",
+  "requiresEngine": 2,
+  "auth": "user",
+  "evidence": "observed",
+  "precondition": "noCart",
+  "params": {
+    "addressId": {
+      "type": "string",
+      "maxLength": 20
+    }
+  },
+  "request": {
+    "method": "POST",
+    "host": "api",
+    "path": "/cart/v1",
+    "body": {
+      "actions": {
+        "products": {
+          "forEachItem": {
+            "id": "{{item.retailerProductId | number}}",
+            "type": "INCREMENT",
+            "vendor_id": "{{item.extras.vendorId | number}}"
+          },
+          "repeat": "qty"
+        },
+        "source": {
+          "name": "PWA"
+        },
+        "address": {
+          "id": "{{param.addressId | number}}"
+        },
+        "vendor": {
+          "code": "{{store.storeId}}"
+        }
+      },
+      "platform": "PWA",
+      "UDID": "{{auth.deviceId}}"
+    }
+  },
+  "response": {
+    "expectStatus": [
+      200
+    ],
+    "items": {
+      "parentPath": "$.cart",
+      "childPath": "@['products','market_party_products'][*]",
+      "bind": "parent"
+    }
+  },
+  "mapping": {
+    "target": "CartLine",
+    "fields": {
+      "storeId": {
+        "template": "{{store.storeId}}",
+        "required": true
+      },
+      "cartId": {
+        "path": "parent.id",
+        "transform": [
+          "toString"
+        ]
+      },
+      "retailerProductId": {
+        "path": "@.id",
+        "transform": [
+          "toString"
+        ],
+        "required": true
+      },
+      "title": {
+        "path": "@.title",
+        "transform": [
+          "normalizePersian"
+        ]
+      },
+      "quantity": {
+        "path": "@.qty",
+        "transform": [
+          "toLong"
+        ],
+        "required": true
+      },
+      "cartPayableRial": {
+        "path": "parent.prices.net_total",
+        "transform": [
+          "toLong",
+          "unit:toman"
+        ]
+      },
+      "cartTotalRial": {
+        "path": "parent.prices.total",
+        "transform": [
+          "toLong",
+          "unit:toman"
+        ]
+      },
+      "minOrderRial": {
+        "path": "parent.vendor_min_order.min_order_value",
+        "transform": [
+          "toLong",
+          "unit:toman"
+        ]
+      },
+      "addressId": {
+        "path": "parent.address.id",
+        "transform": [
+          "toString"
+        ]
+      }
+    }
+  },
+  "notes": "First cart for this vendor. One call fills the whole store: one INCREMENT entry per unit, the shape Snapp's own shopping-list «continue with this store» sends (c782). Live HAR 2026-10-30: POST /cart/v1 created the cart; a Market Party line used actions.market_party_products with discount_id instead of products (not covered here — ordinary catalog lines use products). platform is hard-coded PWA; UDID is SuperYar's own per-install id. The PWA also sends app_version; omitted pending Q-CART-3 (whether Snapp accepts this from a non-PWA client). Lines come from both products and market_party_products (Market Party lines carry discount_id; live HAR 2026-10-30). prices.net_total is the items payable (subtotal − subtotal_discount); prices.total adds service_fee and shipping_fee."
+}

@@ -1,0 +1,59 @@
+{
+  "sdl": "1.2",
+  "kind": "operation",
+  "retailer": "digikalajet",
+  "id": "loginVerify",
+  "capability": "loginVerify",
+  "version": "2026.10.30-2",
+  "requiresEngine": 2,
+  "evidence": "observed",
+  "params": {
+    "phone": {
+      "type": "string",
+      "required": true,
+      "maxLength": 11
+    },
+    "code": {
+      "type": "string",
+      "required": true,
+      "maxLength": 6
+    }
+  },
+  "request": {
+    "method": "POST",
+    "host": "api",
+    "path": "/user/confirm-phone/",
+    "body": {
+      "token": "{{auth.otpToken}}",
+      "code": "{{param.code}}",
+      "phone": "{{param.phone}}"
+    }
+  },
+  "response": {
+    "expectStatus": [
+      200
+    ],
+    "item": {
+      "path": "$.data"
+    }
+  },
+  "mapping": {
+    "target": "UserSession",
+    "fields": {
+      "token": {
+        "path": "@.token",
+        "transform": [
+          "toString"
+        ],
+        "required": true
+      },
+      "refreshToken": {
+        "path": "@.refresh_token",
+        "transform": [
+          "toString"
+        ]
+      }
+    }
+  },
+  "notes": "Live 2026-10-30: a correct code returned data.token (the session; sent raw in Authorization, no Bearer). Live HAR 2026-10-30 (Jet's website): the answer also carries refresh_token (→ sessionRefresh) and external_token (not used). The phone and code are never stored or logged."
+}

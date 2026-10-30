@@ -1,0 +1,28 @@
+{
+  "sdl": "1.2",
+  "kind": "operation",
+  "retailer": "digikalajet",
+  "id": "cartFill",
+  "capability": "cartFill",
+  "version": "2026.10.30-2",
+  "requiresEngine": 2,
+  "auth": "user",
+  "evidence": "observed",
+  "request": {
+    "method": "POST",
+    "host": "api",
+    "path": "/cart/add/",
+    "perItem": true,
+    "pacingMs": 400,
+    "body": {
+      "shop_product_id": "{{item.extras.itemId | number}}",
+      "quantity": "{{item.qty | number}}",
+      "source": "web",
+      "source_page": "shop",
+      "add_cart_source": "shop_search_listing",
+      "latitude": "{{ctx.lat}}",
+      "longitude": "{{ctx.lng}}"
+    }
+  },
+  "notes": "One add per line, as Jet's web client does. /cart/bulk-create/ is the guest-cart upload at login and answered HTTP 500 {error:ignore} for a logged-in user (2026-10-30), so it is not used. Whether quantity is one step or the total is Unknown (Q-JET-A3): read the cart back with cartView. The id is the shop-product id (extras.itemId), not product_id. Live HAR 2026-10-30: Jet's website sends only {shop_product_id, source:\"web\", add_cart_source} (no quantity, no lat/lng) and each add left that line at quantity 1; quantity, source_page and lat/lng here are SuperYar additions Jet may ignore. Until a «+» tap is captured, cartView is the quantity check. The answer is the shop's whole cart_shipment (same shape as one cartView shipment)."
+}

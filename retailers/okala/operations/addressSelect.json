@@ -1,0 +1,29 @@
+{
+  "sdl": "1.2",
+  "kind": "operation",
+  "retailer": "okala",
+  "id": "addressSelect",
+  "capability": "addressSelect",
+  "version": "2026.10.30-1",
+  "requiresEngine": 2,
+  "auth": "user",
+  "evidence": "observed",
+  "params": {
+    "addressId": {
+      "type": "string",
+      "required": true,
+      "maxLength": 20
+    }
+  },
+  "request": {
+    "method": "POST",
+    "host": "api",
+    "path": "/api/voyager/C/CustomerAccount/SetDefaultAddress/{{param.addressId}}/",
+    "headers": {
+      "source": "okala",
+      "ui-version": "2.0"
+    },
+    "body": {}
+  },
+  "notes": "Okala has no per-cart address call: its client sets the account default and then reloads every cart, so carts and stores follow the default address (Observed). The user still confirms the address at checkout on Okala."
+}

@@ -1,0 +1,72 @@
+{
+  "sdl": "1.2",
+  "kind": "operation",
+  "retailer": "snappmarket",
+  "id": "addressList",
+  "capability": "addressList",
+  "version": "2026.10.30-2",
+  "requiresEngine": 2,
+  "auth": "user",
+  "evidence": "observed",
+  "request": {
+    "method": "GET",
+    "host": "api",
+    "path": "/mobile/v1/user/user-addresses-subscription",
+    "query": {
+      "vendorCode": "{{store.storeId}}",
+      "lastLatitude": "{{ctx.lat | format:'%.6f'}}",
+      "lastLongitude": "{{ctx.lng | format:'%.6f'}}"
+    }
+  },
+  "response": {
+    "expectStatus": [
+      200
+    ],
+    "items": {
+      "path": "$.data.addresses[*]"
+    }
+  },
+  "mapping": {
+    "target": "UserAddress",
+    "fields": {
+      "id": {
+        "path": "@.id",
+        "transform": [
+          "toString"
+        ],
+        "required": true
+      },
+      "title": {
+        "path": "@.label",
+        "transform": [
+          "trim"
+        ]
+      },
+      "text": {
+        "path": "@.address",
+        "transform": [
+          "trim"
+        ]
+      },
+      "lat": {
+        "path": "@.latitude",
+        "transform": [
+          "toDouble"
+        ]
+      },
+      "lng": {
+        "path": "@.longitude",
+        "transform": [
+          "toDouble"
+        ]
+      },
+      "inRange": {
+        "path": "@.is_delivering",
+        "transform": [
+          "toBool"
+        ]
+      }
+    }
+  },
+  "notes": "The user's addresses, each with the vendor's delivering flag (isDelivering in the PWA after camelizing; is_delivering on the wire is Inferred). Snapp has no default-address endpoint: the address is tied to a cart through actions.address.id in cartFill. Not seen in the HAR of 2026-10-30: there snapp.market read the addresses from GET /adams/v1/users (data.user.addresses[*], no delivering flag). This path stays observed until captured."
+}

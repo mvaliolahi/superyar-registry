@@ -1,0 +1,28 @@
+{
+  "sdl": "1.2",
+  "kind": "operation",
+  "retailer": "okala",
+  "id": "cartRemove",
+  "capability": "cartRemove",
+  "version": "2026.10.30-1",
+  "requiresEngine": 2,
+  "auth": "user",
+  "evidence": "observed",
+  "request": {
+    "method": "DELETE",
+    "host": "api",
+    "path": "/api/Basket/v2/ShoppingCart/RemoveShoppingCartItem",
+    "headers": {
+      "source": "okala",
+      "ui-version": "2.0"
+    },
+    "perItem": true,
+    "pacingMs": 400,
+    "body": {
+      "productId": "{{item.retailerProductId | number}}",
+      "storeId": "{{store.storeId | number}}",
+      "deliveryMethod": "Delivery"
+    }
+  },
+  "notes": "Removes the whole line (DELETE with a JSON body, as Okala's client sends it). App policy: only lines SuperYar added."
+}

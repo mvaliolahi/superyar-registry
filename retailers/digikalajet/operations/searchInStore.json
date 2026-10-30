@@ -1,0 +1,62 @@
+{
+  "sdl": "1.1",
+  "kind": "operation",
+  "retailer": "digikalajet",
+  "id": "searchInStore",
+  "capability": "search",
+  "version": "2026.10.30-1",
+  "requiresEngine": 1,
+  "scope": "perStore",
+  "request": {
+    "method": "GET",
+    "host": "api",
+    "path": "/products/search/shop/{{store.storeId}}/",
+    "query": {
+      "q": "{{param.query}}",
+      "page": "{{page.number}}",
+      "latitude": "{{ctx.lat | format:'%.6f'}}",
+      "longitude": "{{ctx.lng | format:'%.6f'}}"
+    },
+    "timeoutMs": 8000
+  },
+  "params": { "query": { "type": "string", "required": true, "maxLength": 100 } },
+  "pagination": { "style": "pageNumber", "startAt": 1, "pageSize": 20, "maxPages": 2, "hasMore": { "jsonPath": "$.data.pager.total_pages", "compare": "gtPage" } },
+  "response": {
+    "expectStatus": [200],
+    "items": { "path": "$.data.result[*]" },
+    "cache": { "ttlSeconds": 900, "scope": "store" }
+  },
+  "storeMapping": {
+    "name": { "path": "$.data.shop.title", "transform": ["normalizePersian"] },
+    "isOpen": { "path": "$.data.shop.working_status.is_open", "transform": ["toBool"] },
+    "deliveryTerms.minOrderRial": { "path": "$.data.shop.cart_close_limit", "transform": ["toLong", "unit:rial"] }
+  },
+  "mapping": {
+    "target": "RetailerOffer",
+    "fields": {
+      "retailerProductId": { "path": "@.product_id", "transform": ["toString"], "required": true },
+      "title": { "path": "@.title", "transform": ["trim", "normalizePersian"], "required": true },
+      "barcode": { "path": "@.serial_barcode", "transform": ["toString", "digitsOnly", "gtinOrNull"] },
+      "basePriceRial": { "path": "@.price.price", "transform": ["toLong", "unit:rial"], "required": true },
+      "discountRial": { "path": "@.price.discount", "transform": ["toLong", "unit:rial"] },
+      "availability": { "path": "@.stock.has_stock", "transform": ["toBool"] },
+      "badges": [
+        { "path": "@.badges.is_kalabarg", "transform": ["toBool", "flag:KALABARG"] },
+        { "path": "@.badges.is_amazing", "transform": ["toBool", "flag:SPECIAL_DEAL"] }
+      ],
+      "imageUrl": { "path": "@.media", "transform": ["absoluteUrl:images"] },
+      "categoryIds": { "paths": ["@.category.id"], "transform": ["toString"] },
+      "size": { "path": "@.title", "transform": ["extractSize"] },
+      "extras.itemId": { "path": "@.id", "transform": ["toString"] },
+      "deepLink": { "template": "https://www.digikalajet.com/shop/product/{{store.storeId}}/{{@.id}}/" }
+    }
+  },
+  "notes": "Per-shop search was Observed-only in the ARD (Q-JET-6); verified anonymous 200 on 2026-10-30. The shop block carries the minimum basket but no delivery cost, so fees still come from `search`.",
+  "fixtures": [
+    {
+      "file": "fixtures/searchInStore.200.json",
+      "bind": { "store": { "storeId": "163114904961" }, "param": { "query": "شیر" } },
+      "expect": { "count": 3, "stores": 1, "first": { "storeId": "163114904961", "retailerProductId": "179119014273", "priceRial": 980000, "extras.itemId": "55543971", "deepLink": "https://www.digikalajet.com/shop/product/163114904961/55543971/" } }
+    }
+  ]
+}

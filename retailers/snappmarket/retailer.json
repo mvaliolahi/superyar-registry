@@ -1,0 +1,122 @@
+{
+  "$schema": "../../schema/sdl-1.0/retailer.schema.json",
+  "sdl": "1.2",
+  "kind": "retailer",
+  "id": "snappmarket",
+  "version": "2026.10.30-1",
+  "requiresEngine": 2,
+  "displayName": {
+    "fa": "اسنپ‌مارکت",
+    "en": "SnappMarket"
+  },
+  "hosts": {
+    "api": {
+      "baseUrl": "https://svc.snapp.market",
+      "allowPathPrefixes": [
+        "/express-vendor/general/",
+        "/mobile/v2/product-variation/",
+        "/express-search/mobile/v2/product-variation/"
+      ],
+      "userPathPrefixes": [
+        "/cart/v1",
+        "/mobile/v1/user/user-addresses-subscription",
+        "/mobile/v2/user/logout"
+      ]
+    },
+    "images": {
+      "allowHosts": [
+        "static.snapp.express"
+      ]
+    }
+  },
+  "commonHeaders": {
+    "Accept": "application/json",
+    "Accept-Language": "fa-IR"
+  },
+  "userAgent": "app-default",
+  "auth": {
+    "profile": "anonymous",
+    "user": {
+      "profile": "webLogin",
+      "inject": {
+        "header": "Authorization",
+        "prefix": "Bearer "
+      },
+      "page": {
+        "loginUrl": "https://snapp.market/login",
+        "artefact": {
+          "store": "localStorage",
+          "name": "JWT",
+          "path": "$.access_token"
+        }
+      },
+      "refresh": "retailerPage",
+      "expiry": "jwtExp",
+      "notes": "OTP request is gated by Google reCAPTCHA v3 (is_captcha_enabled true for every client, Verified) and refresh needs the PWA's client secret. SuperYar never solves or bypasses a captcha, so the user logs in on snapp.market's own page inside SuperYar and SuperYar copies localStorage JWT. Live HAR 2026-10-30: loginMobileWithNoPass sends the reCAPTCHA token with the phone; loginMobileWithToken answers oauth2_token {access_token, refresh_token, expires_in 3600}, so the copied session lasts about 1 hour."
+    }
+  },
+  "budget": {
+    "requestsPerMinute": 20,
+    "burst": 5,
+    "maxConcurrent": 2
+  },
+  "defaults": {
+    "feeEstimateRial": 300000,
+    "feeEstimateSource": "observed 2026-10-30, 18 vendors near (35.7219, 51.3347): mostly 0, dark store 339,000 Rial"
+  },
+  "errors": [
+    {
+      "when": {
+        "status": [
+          429
+        ]
+      },
+      "classify": "RATE_LIMITED",
+      "retryAfterFrom": "header:Retry-After"
+    },
+    {
+      "when": {
+        "status": [
+          401,
+          403
+        ]
+      },
+      "classify": "AUTH_REQUIRED"
+    },
+    {
+      "when": {
+        "status": [
+          200
+        ],
+        "jsonPath": "$.status",
+        "equals": false
+      },
+      "classify": "UPSTREAM_ERROR"
+    }
+  ],
+  "capabilities": [
+    "listStores",
+    "search",
+    "productDetail",
+    "deliveryTerms",
+    "handoff",
+    "cartView",
+    "cartFill",
+    "cartRemove",
+    "addressList",
+    "addressSelect",
+    "logout"
+  ],
+  "deliveryTerms": {
+    "embeddedIn": "listStores"
+  },
+  "compliance": {
+    "basis": "pending-review",
+    "termsUrl": "https://snapp.ir/terms/",
+    "reviewedAt": "2026-10-30",
+    "notes": "ToS unreadable (redirect loop). No permission. The PWA's public params client/deviceType/appVersion are omitted (Q-SM-3); all endpoints answered without them on 2026-10-30. Guest OAuth flow not used. User-account operations (engine 2) act only on the user's own carts, never checkout or payment."
+  },
+  "unsupported": {
+    "collectionProducts": "SnappMarket's home sections and product lists (/express-home/mobile/v3/user/new-home, /express-home/vendor/{code}) return 401 (code 3004) anonymously (verified 2026-10-30). The web client gets its token with the embedded OAuth client secret, which ARD 04 §4 forbids. Home shows SnappMarket through SuperYar's own discount rails instead."
+  }
+}

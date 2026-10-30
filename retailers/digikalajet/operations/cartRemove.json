@@ -1,0 +1,25 @@
+{
+  "sdl": "1.2",
+  "kind": "operation",
+  "retailer": "digikalajet",
+  "id": "cartRemove",
+  "capability": "cartRemove",
+  "version": "2026.10.30-1",
+  "requiresEngine": 2,
+  "auth": "user",
+  "evidence": "observed",
+  "request": {
+    "method": "POST",
+    "host": "api",
+    "path": "/cart/item/remove/",
+    "perItem": true,
+    "pacingMs": 400,
+    "body": {
+      "shop_product_id": "{{item.extras.itemId | number}}",
+      "source": "web",
+      "cart_shipment_id": "{{cart.shipmentId}}",
+      "quantity": -1
+    }
+  },
+  "notes": "quantity -1 removes the whole line (omitted = one step). App policy (ARD 15 §4.2): only lines SuperYar itself added in this fill; never the user's other items."
+}

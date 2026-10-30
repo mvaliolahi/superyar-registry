@@ -1,0 +1,43 @@
+{
+  "sdl": "1.1",
+  "kind": "operation",
+  "retailer": "okala",
+  "capability": "productDetail",
+  "version": "2026.10.30-1",
+  "requiresEngine": 1,
+  "request": {
+    "method": "GET",
+    "host": "api",
+    "path": "/api/Unicorn/v1/catalog/pdp",
+    "query": { "sId": "{{store.storeId}}", "pId": "{{item.retailerProductId}}" },
+    "timeoutMs": 8000
+  },
+  "response": { "expectStatus": [200], "item": { "path": "$" }, "cache": { "ttlSeconds": 600, "scope": "store" } },
+  "mapping": {
+    "target": "RetailerOfferDetail",
+    "fields": {
+      "retailerProductId": { "path": "@.id", "transform": ["toString"], "required": true },
+      "title": { "path": "@.name", "transform": ["trim", "normalizePersian"], "required": true },
+      "brand": { "path": "@.brandName", "transform": ["trim", "normalizePersian"] },
+      "basePriceRial": { "path": "@.price", "transform": ["toLong", "unit:rial"], "required": true },
+      "finalPriceRial": { "path": "@.okPrice", "transform": ["toLong", "unit:rial"] },
+      "availability": { "path": "@.hasQuantity", "transform": ["toBool"] },
+      "maxOrderQty": { "path": "@.maxOrderLimit", "transform": ["toLong"] },
+      "badges": [
+        { "path": "@.catalogBadges", "transform": ["contains:\"name\":\"kalabarg\"", "flag:KALABARG"] }
+      ],
+      "imageUrl": { "path": "@.imageUrl", "transform": ["absoluteUrl:images"] },
+      "images": { "path": "@.images[*]", "transform": ["absoluteUrl:images"] },
+      "size": { "path": "@.name", "transform": ["extractSize"] },
+      "deepLink": { "template": "https://www.okala.com/product/{{@.id}}" }
+    }
+  },
+  "notes": "pId is the store catalog id (`id` in listings), not masterProductId. The response has no envelope; 404 comes back as RFC 9457 problem JSON.",
+  "fixtures": [
+    {
+      "file": "fixtures/productDetail.200.json",
+      "bind": { "store": { "storeId": "10693" }, "item": { "retailerProductId": "716" } },
+      "expect": { "count": 1, "first": { "storeId": "10693", "brand": "میهن", "priceRial": 1391250, "badges": ["KALABARG"] } }
+    }
+  ]
+}

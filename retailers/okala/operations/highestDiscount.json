@@ -1,0 +1,136 @@
+{
+  "sdl": "1.1",
+  "kind": "operation",
+  "retailer": "okala",
+  "id": "highestDiscount",
+  "capability": "collectionProducts",
+  "version": "2026.10.30-1",
+  "requiresEngine": 1,
+  "scope": "perStore",
+  "request": {
+    "method": "GET",
+    "host": "api",
+    "path": "/api/carousel/v4/offers/highest-discount",
+    "query": {
+      "storeId": "{{store.storeId}}",
+      "take": "{{page.size}}",
+      "page": "{{page.number}}"
+    },
+    "timeoutMs": 10000
+  },
+  "pagination": {
+    "style": "pageNumber",
+    "startAt": 1,
+    "pageSize": 12,
+    "maxPages": 1,
+    "hasMore": {
+      "jsonPath": "$.hasNextPage",
+      "compare": "isTrue"
+    }
+  },
+  "response": {
+    "expectStatus": [
+      200
+    ],
+    "items": {
+      "path": "$.entities[*]"
+    },
+    "cache": {
+      "ttlSeconds": 1800,
+      "scope": "store"
+    }
+  },
+  "mapping": {
+    "target": "RetailerOffer",
+    "fields": {
+      "retailerProductId": {
+        "path": "@.id",
+        "transform": [
+          "toString"
+        ],
+        "required": true
+      },
+      "title": {
+        "path": "@.name",
+        "transform": [
+          "trim",
+          "normalizePersian"
+        ],
+        "required": true
+      },
+      "basePriceRial": {
+        "path": "@.price",
+        "transform": [
+          "toLong",
+          "unit:rial"
+        ],
+        "required": true
+      },
+      "finalPriceRial": {
+        "path": "@.okPrice",
+        "transform": [
+          "toLong",
+          "unit:rial"
+        ]
+      },
+      "availability": {
+        "path": "@.hasQuantity",
+        "transform": [
+          "toBool"
+        ]
+      },
+      "maxOrderQty": {
+        "path": "@.maxOrderLimit",
+        "transform": [
+          "toLong"
+        ]
+      },
+      "imageUrl": {
+        "path": "@.imageUrl",
+        "transform": [
+          "absoluteUrl:images"
+        ]
+      },
+      "size": {
+        "path": "@.name",
+        "transform": [
+          "extractSize"
+        ]
+      },
+      "extras.masterProductId": {
+        "path": "@.masterProductId",
+        "transform": [
+          "toString"
+        ]
+      },
+      "deepLink": {
+        "template": "https://www.okala.com/product/{{@.id}}"
+      },
+      "extras.collectionTitle": {
+        "template": "بیشترین تخفیف"
+      }
+    }
+  },
+  "notes": "Okala's per-store «بیشترین تخفیف» product carousel. Verified anonymous (GET) 2026-10-30. Okala's home widgets are sponsored brand banners and are not used.",
+  "fixtures": [
+    {
+      "file": "fixtures/highestDiscount.200.json",
+      "bind": {
+        "store": {
+          "storeId": "10693"
+        }
+      },
+      "expect": {
+        "count": 3,
+        "first": {
+          "storeId": "10693",
+          "retailerProductId": "190828",
+          "basePriceRial": 1040000,
+          "discountRial": 416000,
+          "priceRial": 624000,
+          "extras.collectionTitle": "بیشترین تخفیف"
+        }
+      }
+    }
+  ]
+}

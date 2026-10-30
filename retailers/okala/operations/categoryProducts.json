@@ -1,0 +1,152 @@
+{
+  "sdl": "1.1",
+  "kind": "operation",
+  "retailer": "okala",
+  "capability": "categoryProducts",
+  "version": "2026.10.30-1",
+  "requiresEngine": 1,
+  "scope": "perStore",
+  "request": {
+    "method": "GET",
+    "host": "api",
+    "path": "/api/unicorn/v2/products/store/{{store.storeId}}",
+    "query": {
+      "slug": "{{param.categorySlug}}"
+    },
+    "timeoutMs": 12000
+  },
+  "params": {
+    "categorySlug": {
+      "type": "string",
+      "required": true,
+      "maxLength": 80
+    }
+  },
+  "pagination": {
+    "style": "none"
+  },
+  "response": {
+    "expectStatus": [
+      200
+    ],
+    "items": {
+      "path": "$.data[*]"
+    },
+    "cache": {
+      "ttlSeconds": 900,
+      "scope": "store"
+    }
+  },
+  "mapping": {
+    "target": "RetailerOffer",
+    "fields": {
+      "retailerProductId": {
+        "path": "@.id",
+        "transform": [
+          "toString"
+        ],
+        "required": true
+      },
+      "title": {
+        "path": "@.name",
+        "transform": [
+          "trim",
+          "normalizePersian"
+        ],
+        "required": true
+      },
+      "basePriceRial": {
+        "path": "@.price",
+        "transform": [
+          "toLong",
+          "unit:rial"
+        ],
+        "required": true
+      },
+      "finalPriceRial": {
+        "path": "@.okPrice",
+        "transform": [
+          "toLong",
+          "unit:rial"
+        ]
+      },
+      "availability": {
+        "path": "@.hasQuantity",
+        "transform": [
+          "toBool"
+        ]
+      },
+      "maxOrderQty": {
+        "path": "@.maxOrderLimit",
+        "transform": [
+          "toLong"
+        ]
+      },
+      "badges": [
+        {
+          "path": "@.catalogBadges",
+          "transform": [
+            "contains:\"name\":\"kalabarg\"",
+            "flag:KALABARG"
+          ]
+        }
+      ],
+      "imageUrl": {
+        "path": "@.imageUrl",
+        "transform": [
+          "absoluteUrl:images"
+        ]
+      },
+      "size": {
+        "path": "@.name",
+        "transform": [
+          "extractSize"
+        ]
+      },
+      "extras.masterProductId": {
+        "path": "@.masterProductId",
+        "transform": [
+          "toString"
+        ]
+      },
+      "deepLink": {
+        "template": "https://www.okala.com/product/{{@.id}}"
+      }
+    }
+  },
+  "notes": "Returns the whole category in one response, unpaginated: a top-level slug can exceed the engine's 500-result cap (dairy-products = 554 items, verified 2026-10-30), so callers pass a leaf slug (milk = 110 items). Okala publishes the final price (okPrice), not the discount; the runtime derives discount = price − okPrice. catalogBadges is a JSON-encoded string. Prices are Inferred Rial (1L milk = 1,590,000). No barcode.",
+  "fixtures": [
+    {
+      "file": "fixtures/categoryProducts.200.json",
+      "bind": {
+        "store": {
+          "storeId": "10693"
+        },
+        "param": {
+          "categorySlug": "dairy-products"
+        }
+      },
+      "expect": {
+        "count": 3,
+        "first": {
+          "storeId": "10693",
+          "retailerProductId": "716",
+          "title": "شیر کم چرب 1.5% چربی میهن 1 لیتری",
+          "basePriceRial": 1590000,
+          "discountRial": 198750,
+          "priceRial": 1391250,
+          "availability": "IN_STOCK",
+          "badges": [
+            "KALABARG"
+          ],
+          "maxOrderQty": 1,
+          "size": {
+            "value": 1000,
+            "unit": "ml",
+            "raw": "1 لیتری"
+          }
+        }
+      }
+    }
+  ]
+}

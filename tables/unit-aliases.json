@@ -1,0 +1,13 @@
+{
+  "kind": "mapping-table",
+  "name": "unit-aliases",
+  "version": "1",
+  "description": "Size unit spellings seen in retailer titles → canonical unit (used by matching, ARD 08 §3).",
+  "entries": {
+    "گرم": "g", "گرمی": "g", "گ": "g", "g": "g", "gr": "g",
+    "کیلوگرم": "kg", "کیلوگرمی": "kg", "کیلو": "kg", "kg": "kg",
+    "میلی لیتر": "ml", "میلی لیتری": "ml", "سی سی": "ml", "cc": "ml", "ml": "ml",
+    "لیتر": "l", "لیتری": "l", "l": "l",
+    "عدد": "piece", "عددی": "piece", "تایی": "piece", "بسته": "pack"
+  }
+}

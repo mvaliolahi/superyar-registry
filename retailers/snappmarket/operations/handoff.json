@@ -1,0 +1,11 @@
+{
+  "sdl": "1.1",
+  "kind": "operation",
+  "retailer": "snappmarket",
+  "capability": "handoff",
+  "version": "2026.10.30-1",
+  "requiresEngine": 1,
+  "request": null,
+  "handoff": { "rootLink": "https://snapp.market/", "itemLinkVerified": false, "appPackage": "com.snappmarket" },
+  "notes": "Product and vendor URL patterns are Unknown (Q-SM-2): root link plus copy-name only."
+}

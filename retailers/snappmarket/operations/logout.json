@@ -1,0 +1,17 @@
+{
+  "sdl": "1.2",
+  "kind": "operation",
+  "retailer": "snappmarket",
+  "id": "logout",
+  "capability": "logout",
+  "version": "2026.10.30-1",
+  "requiresEngine": 2,
+  "auth": "user",
+  "evidence": "observed",
+  "request": {
+    "method": "POST",
+    "host": "api",
+    "path": "/mobile/v2/user/logout"
+  },
+  "notes": "Ends the Snapp session; the app also clears the stored JWT and the login WebView's partition. Refreshing natively needs the PWA's client secret, so it is never done: an expired token reopens snapp.market in the WebView (auth.user.refresh retailerPage)."
+}

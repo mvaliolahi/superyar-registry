@@ -1,0 +1,39 @@
+{
+  "sdl": "1.1",
+  "kind": "operation",
+  "retailer": "okala",
+  "capability": "categories",
+  "version": "2026.10.30-1",
+  "requiresEngine": 1,
+  "scope": "perStore",
+  "request": {
+    "method": "GET",
+    "host": "api",
+    "path": "/api/unicorn/v3/categories/nearby",
+    "query": { "sId": "{{store.storeId}}" },
+    "timeoutMs": 10000
+  },
+  "response": {
+    "expectStatus": [200],
+    "items": { "path": "$.data.categories[*]" },
+    "tree": { "childrenPath": "@.children[*]", "maxDepth": 4 },
+    "cache": { "ttlSeconds": 86400, "scope": "store" }
+  },
+  "mapping": {
+    "target": "RetailerCategory",
+    "fields": {
+      "id": { "path": "@.id", "transform": ["toString"], "required": true },
+      "title": { "path": "@.name", "transform": ["trim", "normalizePersian"], "required": true },
+      "slug": { "path": "@.latinName", "transform": ["toString"] },
+      "imageUrl": { "path": "@.imageUrl", "transform": ["absoluteUrl:images"] }
+    }
+  },
+  "notes": "Categories are multi-parent (parentIds); the tree position is used as parentId.",
+  "fixtures": [
+    {
+      "file": "fixtures/categories.200.json",
+      "bind": { "store": { "storeId": "10693" } },
+      "expect": { "count": 6, "first": { "id": "3001", "title": "کالابرگ", "slug": "kalabarg", "depth": 0 } }
+    }
+  ]
+}

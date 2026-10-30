@@ -1,0 +1,102 @@
+{
+  "sdl": "1.2",
+  "kind": "operation",
+  "retailer": "okala",
+  "id": "addressList",
+  "capability": "addressList",
+  "version": "2026.10.30-1",
+  "requiresEngine": 2,
+  "auth": "user",
+  "evidence": "verified",
+  "request": {
+    "method": "GET",
+    "host": "api",
+    "path": "/api/v1/accounts/userprofile/getcustomeraddresseswithpaging",
+    "headers": {
+      "source": "okala",
+      "ui-version": "2.0"
+    },
+    "omitEmpty": true,
+    "query": {
+      "pageIndex": "1",
+      "pageSize": "20",
+      "storeId": "{{store.storeId | default:''}}"
+    }
+  },
+  "response": {
+    "expectStatus": [
+      200
+    ],
+    "items": {
+      "path": "$.data.customerAddressResponseItems[*]"
+    }
+  },
+  "mapping": {
+    "target": "UserAddress",
+    "fields": {
+      "id": {
+        "path": "@.id",
+        "transform": [
+          "toString"
+        ],
+        "required": true
+      },
+      "title": {
+        "path": "@.title",
+        "transform": [
+          "trim"
+        ]
+      },
+      "text": {
+        "path": "@.address",
+        "transform": [
+          "trim"
+        ]
+      },
+      "lat": {
+        "path": "@.lat",
+        "transform": [
+          "toDouble"
+        ]
+      },
+      "lng": {
+        "path": "@.lng",
+        "transform": [
+          "toDouble"
+        ]
+      },
+      "isDefault": {
+        "path": "@.isDefault",
+        "transform": [
+          "toBool"
+        ]
+      },
+      "inRange": {
+        "path": "@.isAvailableInCurrentStore",
+        "transform": [
+          "toBool"
+        ]
+      }
+    }
+  },
+  "fixtures": [
+    {
+      "file": "fixtures/addressList.200.json",
+      "bind": {
+        "store": {
+          "storeId": "5784"
+        }
+      },
+      "expect": {
+        "count": 1,
+        "first": {
+          "id": "1000001",
+          "title": "خانه",
+          "isDefault": true,
+          "inRange": false
+        }
+      }
+    }
+  ],
+  "notes": "With storeId, each address carries isAvailableInCurrentStore = does this store deliver there (captured 2026-10-30). Coordinates are numbers. The fixture's personal values (address text, ids, coordinates) are replaced."
+}

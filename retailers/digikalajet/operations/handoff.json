@@ -1,0 +1,16 @@
+{
+  "sdl": "1.1",
+  "kind": "operation",
+  "retailer": "digikalajet",
+  "capability": "handoff",
+  "version": "2026.10.30-1",
+  "requiresEngine": 1,
+  "request": null,
+  "handoff": {
+    "rootLink": "https://www.digikalajet.com/",
+    "itemLink": "https://www.digikalajet.com/shop/product/{{store.storeId}}/{{item.extras.itemId}}/",
+    "itemLinkVerified": false,
+    "appPackage": "com.digikala.firebolt"
+  },
+  "notes": "itemLink pattern is Observed in the SPA routes; set itemLinkVerified after a device test (Q-JET-4)."
+}

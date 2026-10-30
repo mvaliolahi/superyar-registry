@@ -1,0 +1,44 @@
+{
+  "sdl": "1.1",
+  "kind": "operation",
+  "retailer": "digikalajet",
+  "capability": "productDetail",
+  "version": "2026.10.30-1",
+  "requiresEngine": 1,
+  "request": {
+    "method": "GET",
+    "host": "api",
+    "path": "/shop/{{store.storeId}}/product/{{item.extras.itemId}}/",
+    "query": { "latitude": "{{ctx.lat | format:'%.6f'}}", "longitude": "{{ctx.lng | format:'%.6f'}}" },
+    "timeoutMs": 8000
+  },
+  "response": { "expectStatus": [200], "item": { "path": "$.data.product" }, "cache": { "ttlSeconds": 600, "scope": "store" } },
+  "mapping": {
+    "target": "RetailerOfferDetail",
+    "fields": {
+      "retailerProductId": { "path": "@.product_id", "transform": ["toString"], "required": true },
+      "title": { "path": "@.title", "transform": ["trim", "normalizePersian"], "required": true },
+      "barcode": { "path": "@.serial_barcode", "transform": ["toString", "digitsOnly", "gtinOrNull"] },
+      "basePriceRial": { "path": "@.price.price", "transform": ["toLong", "unit:rial"], "required": true },
+      "discountRial": { "path": "@.price.discount", "transform": ["toLong", "unit:rial"] },
+      "availability": { "path": "@.stock.has_stock", "transform": ["toBool"] },
+      "badges": [
+        { "path": "@.badges.is_kalabarg", "transform": ["toBool", "flag:KALABARG"] },
+        { "path": "@.badges.is_amazing", "transform": ["toBool", "flag:SPECIAL_DEAL"] }
+      ],
+      "imageUrl": { "path": "@.media", "transform": ["absoluteUrl:images"] },
+      "images": { "path": "@.media_list[*]", "transform": ["absoluteUrl:images"] },
+      "categoryIds": { "paths": ["@.category.id"], "transform": ["toString"] },
+      "size": { "path": "@.title", "transform": ["extractSize"] },
+      "extras.itemId": { "path": "@.id", "transform": ["toString"] }
+    }
+  },
+  "notes": "The detail path takes the shop-item id (`extras.itemId`); the global product_id returns {\"status\":404} (verified).",
+  "fixtures": [
+    {
+      "file": "fixtures/productDetail.200.json",
+      "bind": { "store": { "storeId": "163114904961" }, "item": { "retailerProductId": "179119014273", "extras": { "itemId": "55543971" } } },
+      "expect": { "count": 1, "first": { "storeId": "163114904961", "barcode": "6260272803783", "priceRial": 980000, "availability": "IN_STOCK" } }
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "sdl": "1.1",
+  "kind": "operation",
+  "retailer": "okala",
+  "capability": "handoff",
+  "version": "2026.10.30-1",
+  "requiresEngine": 1,
+  "request": null,
+  "handoff": {
+    "rootLink": "https://www.okala.com/",
+    "itemLink": "https://www.okala.com/product/{{item.retailerProductId}}",
+    "itemLinkVerified": false,
+    "appPackage": "com.okala"
+  },
+  "notes": "assetlinks verified for com.okala; whether the app accepts /product/{id} is Unknown until a device test."
+}

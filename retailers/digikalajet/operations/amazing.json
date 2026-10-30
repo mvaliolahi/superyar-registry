@@ -1,0 +1,164 @@
+{
+  "sdl": "1.1",
+  "kind": "operation",
+  "retailer": "digikalajet",
+  "id": "amazing",
+  "capability": "collectionProducts",
+  "version": "2026.10.30-1",
+  "requiresEngine": 1,
+  "scope": "context",
+  "request": {
+    "method": "GET",
+    "host": "api",
+    "path": "/post-process/amazing-widget-on-other-lines/1/",
+    "query": {
+      "latitude": "{{ctx.lat | format:'%.6f'}}",
+      "longitude": "{{ctx.lng | format:'%.6f'}}",
+      "sourcePage": "home"
+    },
+    "timeoutMs": 10000
+  },
+  "response": {
+    "expectStatus": [
+      200
+    ],
+    "items": {
+      "path": "$.data.products[*]"
+    },
+    "cache": {
+      "ttlSeconds": 1800,
+      "scope": "context"
+    }
+  },
+  "storeIdPath": "@.shop.id",
+  "storeMapping": {
+    "name": {
+      "path": "@.shop.title",
+      "transform": [
+        "normalizePersian"
+      ]
+    },
+    "extras.activityType": {
+      "path": "@.shop.activity_type",
+      "transform": [
+        "toString"
+      ]
+    }
+  },
+  "mapping": {
+    "target": "RetailerOffer",
+    "fields": {
+      "retailerProductId": {
+        "path": "@.product_id",
+        "transform": [
+          "toString"
+        ],
+        "required": true
+      },
+      "title": {
+        "path": "@.title",
+        "transform": [
+          "trim",
+          "normalizePersian"
+        ],
+        "required": true
+      },
+      "barcode": {
+        "path": "@.serial_barcode",
+        "transform": [
+          "toString",
+          "digitsOnly",
+          "gtinOrNull"
+        ]
+      },
+      "basePriceRial": {
+        "path": "@.price.price",
+        "transform": [
+          "toLong",
+          "unit:rial"
+        ],
+        "required": true
+      },
+      "discountRial": {
+        "path": "@.price.discount",
+        "transform": [
+          "toLong",
+          "unit:rial"
+        ]
+      },
+      "availability": {
+        "path": "@.stock.has_stock",
+        "transform": [
+          "toBool"
+        ]
+      },
+      "badges": [
+        {
+          "path": "@.badges.is_kalabarg",
+          "transform": [
+            "toBool",
+            "flag:KALABARG"
+          ]
+        },
+        {
+          "path": "@.badges.is_amazing",
+          "transform": [
+            "toBool",
+            "flag:SPECIAL_DEAL"
+          ]
+        }
+      ],
+      "imageUrl": {
+        "path": "@.media",
+        "transform": [
+          "absoluteUrl:images"
+        ]
+      },
+      "categoryIds": {
+        "paths": [
+          "@.category.id"
+        ],
+        "transform": [
+          "toString"
+        ]
+      },
+      "size": {
+        "path": "@.title",
+        "transform": [
+          "extractSize"
+        ]
+      },
+      "extras.itemId": {
+        "path": "@.id",
+        "transform": [
+          "toString"
+        ]
+      },
+      "deepLink": {
+        "template": "https://www.digikalajet.com/shop/product/{{@.shop.id}}/{{@.id}}/"
+      },
+      "extras.collectionTitle": {
+        "path": "$.data.title",
+        "transform": [
+          "trim",
+          "normalizePersian"
+        ]
+      }
+    }
+  },
+  "notes": "Jet's own deals widget (the «شگفت‌انگیز» line). Same shape as a carousel. Verified anonymous 2026-10-30.",
+  "fixtures": [
+    {
+      "file": "fixtures/amazing.200.json",
+      "expect": {
+        "count": 3,
+        "first": {
+          "retailerProductId": "129119371860",
+          "basePriceRial": 2170000,
+          "discountRial": 937700,
+          "priceRial": 1232300
+        }
+      }
+    }
+  ]
+}

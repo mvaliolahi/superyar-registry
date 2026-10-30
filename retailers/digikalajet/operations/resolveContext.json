@@ -1,0 +1,29 @@
+{
+  "sdl": "1.1",
+  "kind": "operation",
+  "retailer": "digikalajet",
+  "capability": "resolveContext",
+  "version": "2026.10.30-1",
+  "requiresEngine": 1,
+  "request": {
+    "method": "GET",
+    "host": "api",
+    "path": "/first-load/",
+    "query": { "latitude": "{{ctx.lat | format:'%.6f'}}", "longitude": "{{ctx.lng | format:'%.6f'}}" },
+    "timeoutMs": 8000
+  },
+  "response": { "expectStatus": [200], "item": { "path": "$.data" }, "cache": { "ttlSeconds": 86400, "scope": "context" } },
+  "mapping": {
+    "target": "ServingContext",
+    "fields": {
+      "covered": { "path": "@.city_id", "transform": ["toLong", "gt:0"], "required": true },
+      "cityId": { "path": "@.city_id", "transform": ["toString"] },
+      "areaId": { "path": "@.polygon.id", "transform": ["toString"] },
+      "extras.cityName": { "path": "@.city_name", "transform": ["trim"] },
+      "extras.areaName": { "path": "@.polygon.name", "transform": ["trim"] }
+    }
+  },
+  "fixtures": [
+    { "file": "fixtures/resolveContext.200.json", "expect": { "count": 1, "first": { "covered": true, "cityId": "1698", "areaId": "8421190103" } } }
+  ]
+}

@@ -1,0 +1,118 @@
+{
+  "sdl": "1.2",
+  "kind": "operation",
+  "retailer": "okala",
+  "id": "cartView",
+  "capability": "cartView",
+  "version": "2026.10.30-2",
+  "requiresEngine": 2,
+  "auth": "user",
+  "evidence": "verified",
+  "request": {
+    "method": "POST",
+    "host": "api",
+    "path": "/api/Basket/v4/ShoppingCart/GetCustomerShoppingCartItems",
+    "headers": {
+      "source": "okala",
+      "ui-version": "2.0"
+    },
+    "body": {
+      "storeIds": [
+        "{{store.storeId | number}}"
+      ],
+      "isFromCartPage": false,
+      "cartDetails": false
+    }
+  },
+  "response": {
+    "expectStatus": [
+      200
+    ],
+    "items": {
+      "parentPath": "$.data.result[*]",
+      "childPath": "@.items[*]",
+      "bind": "parent"
+    }
+  },
+  "mapping": {
+    "target": "CartLine",
+    "fields": {
+      "storeId": {
+        "path": "parent.storeId",
+        "transform": [
+          "toString"
+        ],
+        "required": true
+      },
+      "cartId": {
+        "path": "parent.shoppingCartId",
+        "transform": [
+          "toString"
+        ]
+      },
+      "retailerProductId": {
+        "path": "@.productId",
+        "transform": [
+          "toString"
+        ],
+        "required": true
+      },
+      "title": {
+        "path": "@.productName",
+        "transform": [
+          "normalizePersian"
+        ]
+      },
+      "quantity": {
+        "path": "@.quantity",
+        "transform": [
+          "toLong"
+        ],
+        "required": true
+      },
+      "linePayableRial": {
+        "path": "@.rowOkPrice",
+        "transform": [
+          "toLong",
+          "unit:rial"
+        ]
+      },
+      "cartPayableRial": {
+        "path": "parent.totalOkPrice",
+        "transform": [
+          "toLong",
+          "unit:rial"
+        ]
+      },
+      "minOrderRial": {
+        "path": "parent.minAmountForSubmitOrder",
+        "transform": [
+          "toLong",
+          "positiveOrNull",
+          "unit:rial"
+        ]
+      }
+    }
+  },
+  "fixtures": [
+    {
+      "file": "fixtures/cartView.200.json",
+      "bind": {
+        "store": {
+          "storeId": "5784"
+        }
+      },
+      "expect": {
+        "count": 1,
+        "first": {
+          "storeId": "5784",
+          "retailerProductId": "280832",
+          "quantity": 1,
+          "linePayableRial": 4816878,
+          "cartPayableRial": 4816878
+        }
+      }
+    }
+  ],
+  "notes": "One cart per store (shoppingCartId per storeId). totalOkPrice is the payable total after discounts, in Rial; minAmountForSubmitOrder was 0 in every capture, so 0 maps to unknown (positiveOrNull), not «no minimum». totalOkPrice is items only: operationPrice, packingPrice and deliveryCost come on top, so there is no single fees-included total (no cartTotalRial). Captured 2026-10-30 from the maintainer's own session (HAR)."
+}

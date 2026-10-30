@@ -1,0 +1,116 @@
+{
+  "sdl": "1.2",
+  "kind": "operation",
+  "retailer": "snappmarket",
+  "id": "cartFill",
+  "capability": "cartFill",
+  "version": "2026.10.30-2",
+  "requiresEngine": 2,
+  "auth": "user",
+  "evidence": "observed",
+  "precondition": "cart",
+  "params": {
+    "addressId": {
+      "type": "string",
+      "maxLength": 20
+    }
+  },
+  "request": {
+    "method": "PUT",
+    "host": "api",
+    "path": "/cart/v1/{{cart.id}}",
+    "body": {
+      "actions": {
+        "products": {
+          "forEachItem": {
+            "id": "{{item.retailerProductId | number}}",
+            "type": "INCREMENT",
+            "vendor_id": "{{item.extras.vendorId | number}}"
+          },
+          "repeat": "qty"
+        },
+        "source": {
+          "name": "PWA"
+        },
+        "address": {
+          "id": "{{param.addressId | number}}"
+        }
+      },
+      "platform": "PWA",
+      "UDID": "{{auth.deviceId}}"
+    }
+  },
+  "response": {
+    "expectStatus": [
+      200
+    ],
+    "items": {
+      "parentPath": "$.cart",
+      "childPath": "@['products','market_party_products'][*]",
+      "bind": "parent"
+    }
+  },
+  "mapping": {
+    "target": "CartLine",
+    "fields": {
+      "storeId": {
+        "template": "{{store.storeId}}",
+        "required": true
+      },
+      "cartId": {
+        "path": "parent.id",
+        "transform": [
+          "toString"
+        ]
+      },
+      "retailerProductId": {
+        "path": "@.id",
+        "transform": [
+          "toString"
+        ],
+        "required": true
+      },
+      "title": {
+        "path": "@.title",
+        "transform": [
+          "normalizePersian"
+        ]
+      },
+      "quantity": {
+        "path": "@.qty",
+        "transform": [
+          "toLong"
+        ],
+        "required": true
+      },
+      "cartPayableRial": {
+        "path": "parent.prices.net_total",
+        "transform": [
+          "toLong",
+          "unit:toman"
+        ]
+      },
+      "cartTotalRial": {
+        "path": "parent.prices.total",
+        "transform": [
+          "toLong",
+          "unit:toman"
+        ]
+      },
+      "minOrderRial": {
+        "path": "parent.vendor_min_order.min_order_value",
+        "transform": [
+          "toLong",
+          "unit:toman"
+        ]
+      },
+      "addressId": {
+        "path": "parent.address.id",
+        "transform": [
+          "toString"
+        ]
+      }
+    }
+  },
+  "notes": "The vendor already has a cart (cart.id from cartView): same actions, added to it. Live HAR 2026-10-30 PUT body matched products INCREMENT (address omitted when already on the cart). Market Party lines use market_party_products + discount_id instead. A failed line does not fail the call: errors (OUT_OF_STOCK, NOT_DELIVERABLE, …) come back next to the updated cart (Inferred); compare the read-back. Lines come from both products and market_party_products (Market Party lines carry discount_id; live HAR 2026-10-30). prices.net_total is the items payable (subtotal − subtotal_discount); prices.total adds service_fee and shipping_fee."
+}

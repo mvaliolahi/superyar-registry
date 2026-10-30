@@ -1,0 +1,133 @@
+{
+  "$schema": "../../schema/sdl-1.0/retailer.schema.json",
+  "sdl": "1.2",
+  "kind": "retailer",
+  "id": "okala",
+  "version": "2026.10.30-1",
+  "requiresEngine": 2,
+  "displayName": {
+    "fa": "اُکالا",
+    "en": "Okala"
+  },
+  "hosts": {
+    "api": {
+      "baseUrl": "https://apigateway.okala.com",
+      "allowPathPrefixes": [
+        "/api/opex/v4/stores/",
+        "/api/unicorn/v3/categories/",
+        "/api/unicorn/v2/products/store/",
+        "/api/Unicorn/v1/catalog/",
+        "/api/carousel/v4/offers/highest-discount"
+      ],
+      "userPathPrefixes": [
+        "/api/Basket/v2/ShoppingCart/",
+        "/api/Basket/v4/ShoppingCart/",
+        "/api/v1/accounts/userprofile/getcustomeraddresseswithpaging",
+        "/api/voyager/C/CustomerAccount/SetDefaultAddress/",
+        "/api/v1/accounts/tokens/logout"
+      ]
+    },
+    "images": {
+      "allowHosts": [
+        "asset.okala.com",
+        "cdn.okala.com"
+      ]
+    }
+  },
+  "commonHeaders": {
+    "Accept": "application/json",
+    "Accept-Language": "fa-IR"
+  },
+  "userAgent": "app-default",
+  "auth": {
+    "profile": "anonymous",
+    "user": {
+      "profile": "webLogin",
+      "inject": {
+        "header": "Authorization",
+        "prefix": "Bearer "
+      },
+      "page": {
+        "loginUrl": "https://www.okala.com/auth",
+        "artefact": {
+          "store": "cookie",
+          "name": "token"
+        }
+      },
+      "refresh": "retailerPage",
+      "expiry": "jwtExp",
+      "notes": "Every Okala token grant (OTP, password, refresh) sends the client secret embedded in its JS, which SuperYar never uses (ARD 11 §2). So the user logs in on Okala's own page inside SuperYar and SuperYar copies the `token` cookie (a JWT, ~10 h). Expiry = reopen the page. Live HAR 2026-10-30: the `token` cookie is exactly the access_token the site then sends as Bearer; expires_in 36000 (10 h)."
+    }
+  },
+  "budget": {
+    "requestsPerMinute": 15,
+    "burst": 3,
+    "maxConcurrent": 2
+  },
+  "errors": [
+    {
+      "when": {
+        "status": [
+          429
+        ]
+      },
+      "classify": "RATE_LIMITED",
+      "retryAfterFrom": "header:Retry-After"
+    },
+    {
+      "when": {
+        "status": [
+          401,
+          403
+        ]
+      },
+      "classify": "AUTH_REQUIRED"
+    },
+    {
+      "when": {
+        "status": [
+          404
+        ]
+      },
+      "classify": "NOT_FOUND"
+    },
+    {
+      "when": {
+        "status": [
+          200
+        ],
+        "jsonPath": "$.success",
+        "equals": false
+      },
+      "classify": "UPSTREAM_ERROR",
+      "messageFrom": "$.errorMessage"
+    }
+  ],
+  "capabilities": [
+    "listStores",
+    "categories",
+    "categoryProducts",
+    "productDetail",
+    "deliveryTerms",
+    "handoff",
+    "collectionProducts",
+    "cartView",
+    "cartFill",
+    "cartRemove",
+    "addressList",
+    "addressSelect",
+    "logout"
+  ],
+  "unsupported": {
+    "search": "Every Okala search endpoint (/unicorn/v2/search/store/{id}, /unicorn/v2/cumulative/search/nearby[-list]) returns 401 anonymously (verified 2026-10-30). The website obtains its token with an OAuth client secret embedded in its JS, which ARD 04 §4 forbids. Search is category-scoped instead: categoryProducts + local filtering."
+  },
+  "deliveryTerms": {
+    "embeddedIn": "listStores"
+  },
+  "compliance": {
+    "basis": "pending-review",
+    "termsUrl": null,
+    "reviewedAt": "2026-10-30",
+    "notes": "No ToS found. robots.txt disallows the web routes /search? and /store*; the API host is not covered by robots but this signals intent, so a separate compliance review is required (ARD 07 §3). Okala's custom client headers (source, ui-version, X-User-Unique-Id, ...) are not sent. User-account operations (engine 2) act only on the user's own cart and default address, never checkout or payment."
+  }
+}

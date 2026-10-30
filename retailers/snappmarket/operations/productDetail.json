@@ -1,0 +1,50 @@
+{
+  "sdl": "1.1",
+  "kind": "operation",
+  "retailer": "snappmarket",
+  "capability": "productDetail",
+  "version": "2026.10.30-1",
+  "requiresEngine": 1,
+  "request": {
+    "method": "GET",
+    "host": "api",
+    "path": "/express-search/mobile/v2/product-variation/view",
+    "query": {
+      "lat": "{{ctx.lat | format:'%.6f'}}",
+      "long": "{{ctx.lng | format:'%.6f'}}",
+      "productVariationId": "{{item.retailerProductId}}",
+      "vendorCode": "{{store.storeId}}"
+    },
+    "timeoutMs": 8000
+  },
+  "response": {
+    "expectStatus": [200],
+    "item": { "path": "$.data.details" },
+    "cache": { "ttlSeconds": 600, "scope": "store" }
+  },
+  "mapping": {
+    "target": "RetailerOfferDetail",
+    "fields": {
+      "retailerProductId": { "path": "@.id", "transform": ["toString"], "required": true },
+      "title": { "path": "@.title", "transform": ["trim", "normalizePersian"], "required": true },
+      "brand": { "path": "@.brandTitle", "transform": ["trim", "normalizePersian"] },
+      "basePriceRial": { "path": "@.price", "transform": ["toLong", "unit:toman"], "required": true },
+      "discountRial": { "path": "@.discount", "transform": ["toLong", "unit:toman"] },
+      "badges": [
+        { "path": "@.badges[?(@.id == 114)]", "transform": ["count", "gt:0", "flag:KALABARG"] }
+      ],
+      "imageUrl": { "path": "@.images[0].main", "transform": ["absoluteUrl:images"] },
+      "images": { "path": "@.images[*].main", "transform": ["absoluteUrl:images"] },
+      "categoryIds": { "paths": ["@.subcategoryId", "@.categoryId"], "transform": ["toString"] },
+      "size": { "path": "@.title", "transform": ["extractSize"] }
+    }
+  },
+  "notes": "No stock field in detail: availability is intentionally unmapped so the data layer keeps the last known value (ARD 04 §5.7).",
+  "fixtures": [
+    {
+      "file": "fixtures/productDetail.200.json",
+      "bind": { "store": { "storeId": "0gz872" }, "item": { "retailerProductId": "4087600" } },
+      "expect": { "count": 1, "first": { "storeId": "0gz872", "retailerProductId": "4087600", "brand": "روزانه", "priceRial": 1740000, "badges": ["KALABARG"] } }
+    }
+  ]
+}

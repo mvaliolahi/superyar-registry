@@ -1,0 +1,179 @@
+{
+  "sdl": "1.1",
+  "kind": "operation",
+  "retailer": "digikalajet",
+  "id": "collectionProducts",
+  "capability": "collectionProducts",
+  "version": "2026.10.30-1",
+  "requiresEngine": 1,
+  "scope": "context",
+  "request": {
+    "method": "GET",
+    "host": "api",
+    "path": "/post-process/single-row-carousel/{{param.collectionId}}/",
+    "query": {
+      "latitude": "{{ctx.lat | format:'%.6f'}}",
+      "longitude": "{{ctx.lng | format:'%.6f'}}",
+      "sourcePage": "home"
+    },
+    "timeoutMs": 10000
+  },
+  "response": {
+    "expectStatus": [
+      200
+    ],
+    "items": {
+      "path": "$.data.products[*]"
+    },
+    "cache": {
+      "ttlSeconds": 1800,
+      "scope": "context"
+    }
+  },
+  "storeIdPath": "@.shop.id",
+  "storeMapping": {
+    "name": {
+      "path": "@.shop.title",
+      "transform": [
+        "normalizePersian"
+      ]
+    },
+    "extras.activityType": {
+      "path": "@.shop.activity_type",
+      "transform": [
+        "toString"
+      ]
+    }
+  },
+  "mapping": {
+    "target": "RetailerOffer",
+    "fields": {
+      "retailerProductId": {
+        "path": "@.product_id",
+        "transform": [
+          "toString"
+        ],
+        "required": true
+      },
+      "title": {
+        "path": "@.title",
+        "transform": [
+          "trim",
+          "normalizePersian"
+        ],
+        "required": true
+      },
+      "barcode": {
+        "path": "@.serial_barcode",
+        "transform": [
+          "toString",
+          "digitsOnly",
+          "gtinOrNull"
+        ]
+      },
+      "basePriceRial": {
+        "path": "@.price.price",
+        "transform": [
+          "toLong",
+          "unit:rial"
+        ],
+        "required": true
+      },
+      "discountRial": {
+        "path": "@.price.discount",
+        "transform": [
+          "toLong",
+          "unit:rial"
+        ]
+      },
+      "availability": {
+        "path": "@.stock.has_stock",
+        "transform": [
+          "toBool"
+        ]
+      },
+      "badges": [
+        {
+          "path": "@.badges.is_kalabarg",
+          "transform": [
+            "toBool",
+            "flag:KALABARG"
+          ]
+        },
+        {
+          "path": "@.badges.is_amazing",
+          "transform": [
+            "toBool",
+            "flag:SPECIAL_DEAL"
+          ]
+        }
+      ],
+      "imageUrl": {
+        "path": "@.media",
+        "transform": [
+          "absoluteUrl:images"
+        ]
+      },
+      "categoryIds": {
+        "paths": [
+          "@.category.id"
+        ],
+        "transform": [
+          "toString"
+        ]
+      },
+      "size": {
+        "path": "@.title",
+        "transform": [
+          "extractSize"
+        ]
+      },
+      "extras.itemId": {
+        "path": "@.id",
+        "transform": [
+          "toString"
+        ]
+      },
+      "deepLink": {
+        "template": "https://www.digikalajet.com/shop/product/{{@.shop.id}}/{{@.id}}/"
+      },
+      "extras.collectionTitle": {
+        "path": "$.data.title",
+        "transform": [
+          "trim",
+          "normalizePersian"
+        ]
+      }
+    }
+  },
+  "notes": "One home carousel (title + up to ~20 products, each with its own shop). Verified anonymous without the web client's irsi parameter, 2026-10-30.",
+  "fixtures": [
+    {
+      "file": "fixtures/collectionProducts.200.json",
+      "bind": {
+        "param": {
+          "collectionId": "335408"
+        }
+      },
+      "expect": {
+        "count": 3,
+        "stores": 1,
+        "first": {
+          "storeId": "37411652276",
+          "retailerProductId": "209118490842",
+          "basePriceRial": 11490000,
+          "discountRial": 3649000,
+          "priceRial": 7841000,
+          "extras.collectionTitle": "آجیل و خشکبار برای دورهمی"
+        }
+      }
+    }
+  ],
+  "params": {
+    "collectionId": {
+      "type": "string",
+      "required": true,
+      "maxLength": 12
+    }
+  }
+}

@@ -1,0 +1,123 @@
+{
+  "$schema": "../../schema/sdl-1.0/retailer.schema.json",
+  "sdl": "1.2",
+  "kind": "retailer",
+  "id": "digikalajet",
+  "version": "2026.10.30-1",
+  "requiresEngine": 2,
+  "displayName": {
+    "fa": "دیجی‌کالا جت",
+    "en": "Digikala Jet"
+  },
+  "hosts": {
+    "api": {
+      "baseUrl": "https://api.digikalajet.ir",
+      "allowPathPrefixes": [
+        "/first-load/",
+        "/v2/search/",
+        "/products/search/shop/",
+        "/shop/",
+        "/v3/main-page/",
+        "/post-process/single-row-carousel/",
+        "/post-process/amazing-widget-on-other-lines/"
+      ],
+      "userPathPrefixes": [
+        "/user/login-register/",
+        "/user/confirm-phone/",
+        "/user/refresh-token/",
+        "/cart/",
+        "/address/"
+      ]
+    },
+    "images": {
+      "allowHosts": [
+        "dkstatics-public.digikala.com"
+      ]
+    }
+  },
+  "commonHeaders": {
+    "Accept": "application/json",
+    "Accept-Language": "fa-IR"
+  },
+  "userAgent": "app-default",
+  "auth": {
+    "profile": "anonymous",
+    "user": {
+      "profile": "userOtp",
+      "inject": {
+        "header": "Authorization",
+        "prefix": ""
+      },
+      "refresh": "operation",
+      "refreshOn": [
+        402
+      ],
+      "expiry": "unknown",
+      "notes": "Native phone → OTP (no captcha, no secret observed). Live 2026-10-30 the SMS was sent only with Jet's web identity headers (ch=jj, session-activity, app-id; PoC JET_WEB_IDENTITY phase-0 exception); those are NOT in this definition and need Jet's permission before any release (ARD 15 §5)."
+    }
+  },
+  "budget": {
+    "requestsPerMinute": 20,
+    "burst": 5,
+    "maxConcurrent": 2
+  },
+  "defaults": {
+    "feeEstimateRial": 300000,
+    "feeEstimateSource": "observed 2026-10-30, Tehran supermarkets: 0 / 283,000 / 339,500 / 452,000 Rial"
+  },
+  "errors": [
+    {
+      "when": {
+        "status": [
+          429
+        ]
+      },
+      "classify": "RATE_LIMITED",
+      "retryAfterFrom": "header:Retry-After"
+    },
+    {
+      "when": {
+        "status": [
+          200
+        ],
+        "jsonPath": "$.status",
+        "notEquals": 200
+      },
+      "classifyFrom": {
+        "path": "$.status",
+        "map": {
+          "404": "NOT_FOUND",
+          "402": "AUTH_REQUIRED",
+          "467": "BLOCKED"
+        },
+        "else": "UPSTREAM_ERROR"
+      }
+    }
+  ],
+  "capabilities": [
+    "resolveContext",
+    "search",
+    "productDetail",
+    "deliveryTerms",
+    "handoff",
+    "collections",
+    "collectionProducts",
+    "loginStart",
+    "loginVerify",
+    "sessionRefresh",
+    "cartView",
+    "cartFill",
+    "cartRemove",
+    "addressList",
+    "addressSelect"
+  ],
+  "deliveryTerms": {
+    "embeddedIn": "search"
+  },
+  "compliance": {
+    "basis": "pending-review",
+    "termsUrl": "https://www.digikalajet.com/static/terms-and-conditions",
+    "reviewedAt": "2026-10-30",
+    "notes": "Jet's own terms are silent on automated access; the parent Digikala ToS forbids robots and commercial price use. Needs permission or a legal opinion (CG-1). No app headers are sent; ch=jj is omitted (Q-JET-2) and every endpoint answered without it on 2026-10-30. User-account operations (engine 2) act only on the user's own cart and saved addresses, never checkout or payment."
+  }
+}

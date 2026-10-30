@@ -1,0 +1,31 @@
+{
+  "sdl": "1.1",
+  "kind": "operation",
+  "retailer": "digikalajet",
+  "capability": "collections",
+  "version": "2026.10.30-1",
+  "requiresEngine": 1,
+  "request": {
+    "method": "GET",
+    "host": "api",
+    "path": "/v3/main-page/",
+    "query": { "latitude": "{{ctx.lat | format:'%.6f'}}", "longitude": "{{ctx.lng | format:'%.6f'}}" },
+    "timeoutMs": 10000
+  },
+  "response": {
+    "expectStatus": [200],
+    "items": { "path": "$.data.components[?(@.component_type == 'single-row-carousel')]" },
+    "cache": { "ttlSeconds": 3600, "scope": "context" }
+  },
+  "mapping": {
+    "target": "RetailerCollection",
+    "fields": {
+      "id": { "path": "@.data.api.url", "transform": ["toString", "segment:2"], "required": true },
+      "kind": { "path": "@.component_type", "transform": ["toString"] }
+    }
+  },
+  "notes": "Home layout. Only product carousels are used. marketing-banner, puzzle-banner and type-b-banner are retailer ads and are deliberately not mapped (CG-5, neutrality). Titles come with each carousel's products. Verified anonymous 2026-10-30.",
+  "fixtures": [
+    { "file": "fixtures/collections.200.json", "expect": { "count": 6, "first": { "id": "335408", "kind": "single-row-carousel" } } }
+  ]
+}

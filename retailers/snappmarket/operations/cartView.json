@@ -1,0 +1,90 @@
+{
+  "sdl": "1.2",
+  "kind": "operation",
+  "retailer": "snappmarket",
+  "id": "cartView",
+  "capability": "cartView",
+  "version": "2026.10.30-2",
+  "requiresEngine": 2,
+  "auth": "user",
+  "evidence": "observed",
+  "request": {
+    "method": "GET",
+    "host": "api",
+    "path": "/cart/v1/vendor/{{store.storeId}}"
+  },
+  "response": {
+    "expectStatus": [
+      200,
+      404
+    ],
+    "items": {
+      "parentPath": "$.cart",
+      "childPath": "@['products','market_party_products'][*]",
+      "bind": "parent"
+    }
+  },
+  "mapping": {
+    "target": "CartLine",
+    "fields": {
+      "storeId": {
+        "template": "{{store.storeId}}",
+        "required": true
+      },
+      "cartId": {
+        "path": "parent.id",
+        "transform": [
+          "toString"
+        ]
+      },
+      "retailerProductId": {
+        "path": "@.id",
+        "transform": [
+          "toString"
+        ],
+        "required": true
+      },
+      "title": {
+        "path": "@.title",
+        "transform": [
+          "normalizePersian"
+        ]
+      },
+      "quantity": {
+        "path": "@.qty",
+        "transform": [
+          "toLong"
+        ],
+        "required": true
+      },
+      "cartPayableRial": {
+        "path": "parent.prices.net_total",
+        "transform": [
+          "toLong",
+          "unit:toman"
+        ]
+      },
+      "cartTotalRial": {
+        "path": "parent.prices.total",
+        "transform": [
+          "toLong",
+          "unit:toman"
+        ]
+      },
+      "minOrderRial": {
+        "path": "parent.vendor_min_order.min_order_value",
+        "transform": [
+          "toLong",
+          "unit:toman"
+        ]
+      },
+      "addressId": {
+        "path": "parent.address.id",
+        "transform": [
+          "toString"
+        ]
+      }
+    }
+  },
+  "notes": "The user's open cart for one vendor ({cart:{…}}, snake_case on the wire; the PWA camelizes it). No cart for the vendor = HTTP 404 with not_found_error.errors[0].code CART_NOT_FOUND and cart:null (live 2026-10-30 HAR) → expectStatus includes 404 and the engine treats it as an empty cart (use cartFillNew). Prices are Toman (retailer unit). Verified 401 / code 3004 without a token. Lines come from both products and market_party_products (Market Party lines carry discount_id; live HAR 2026-10-30). prices.net_total is the items payable (subtotal − subtotal_discount); prices.total adds service_fee and shipping_fee."
+}

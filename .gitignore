@@ -1,0 +1,5 @@
+node_modules/
+# The signing private key is NEVER committed. Keep it offline (ARD 05 §5).
+keys/private/
+*.key
+.DS_Store

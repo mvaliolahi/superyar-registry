@@ -1,0 +1,60 @@
+{
+  "sdl": "1.1",
+  "kind": "operation",
+  "retailer": "snappmarket",
+  "capability": "search",
+  "version": "2026.10.30-1",
+  "requiresEngine": 1,
+  "scope": "perStore",
+  "request": {
+    "method": "GET",
+    "host": "api",
+    "path": "/mobile/v2/product-variation/search",
+    "query": {
+      "lat": "{{ctx.lat | format:'%.6f'}}",
+      "long": "{{ctx.lng | format:'%.6f'}}",
+      "query": "{{param.query}}",
+      "vendorCode": "{{store.storeId}}",
+      "page": "{{page.number}}",
+      "page_size": "{{page.size}}",
+      "size": "{{page.size}}"
+    },
+    "timeoutMs": 8000
+  },
+  "params": { "query": { "type": "string", "required": true, "maxLength": 100 } },
+  "pagination": { "style": "pageNumber", "startAt": 0, "pageSize": 20, "maxPages": 2, "hasMore": { "compare": "fullPage" } },
+  "response": {
+    "expectStatus": [200],
+    "items": { "path": "$.data.result[*]" },
+    "cache": { "ttlSeconds": 900, "scope": "store" }
+  },
+  "mapping": {
+    "target": "RetailerOffer",
+    "fields": {
+      "retailerProductId": { "path": "@.id", "transform": ["toString"], "required": true },
+      "title": { "path": "@.title", "transform": ["trim", "normalizePersian"], "required": true },
+      "brand": { "path": "@.brand", "transform": ["trim", "normalizePersian"] },
+      "basePriceRial": { "path": "@.price", "transform": ["toLong", "unit:toman"], "required": true },
+      "discountRial": { "path": "@.discount", "transform": ["toLong", "unit:toman"] },
+      "availability": { "path": "@.stock", "transform": ["toLong", "gt:0"] },
+      "badges": [
+        { "path": "@.badges[?(@.id == 114)]", "transform": ["count", "gt:0", "flag:KALABARG"] }
+      ],
+      "imageUrl": { "path": "@.images[0].main", "transform": ["absoluteUrl:images"] },
+      "categoryIds": { "paths": ["@.menu_category_id", "@.root_category_id"], "transform": ["toString"] },
+      "size": { "path": "@.title", "transform": ["extractSize"] },
+      "extras.vendorId": { "path": "@.vendor_id", "transform": ["toString"] }
+    }
+  },
+  "notes": "Kalabarg badge id 114 has type BEST_PRICE; its description reads «این کالا مشمول کالابرگ الکترونیکی می‌شود» (observed 2026-10-30), which supports the KALABARG meaning (Q-SM-4). No barcode field.",
+  "fixtures": [
+    {
+      "file": "fixtures/search.200.json",
+      "bind": { "store": { "storeId": "0gz872" }, "param": { "query": "شیر" } },
+      "expect": {
+        "count": 3,
+        "first": { "storeId": "0gz872", "retailerProductId": "4087600", "basePriceRial": 1740000, "priceRial": 1740000, "availability": "IN_STOCK", "badges": ["KALABARG"], "size": { "value": 1000, "unit": "ml", "raw": "1 لیتری" } }
+      }
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "sdl": "1.2",
+  "kind": "operation",
+  "retailer": "digikalajet",
+  "id": "sessionRefresh",
+  "capability": "sessionRefresh",
+  "version": "2026.10.30-1",
+  "requiresEngine": 2,
+  "evidence": "observed",
+  "request": {
+    "method": "POST",
+    "host": "api",
+    "path": "/user/refresh-token/",
+    "body": {
+      "refresh_token": "{{auth.refreshToken}}",
+      "token": "{{auth.token}}"
+    }
+  },
+  "response": {
+    "expectStatus": [
+      200
+    ],
+    "item": {
+      "path": "$.data"
+    }
+  },
+  "mapping": {
+    "target": "UserSession",
+    "fields": {
+      "token": {
+        "path": "@.token",
+        "transform": [
+          "toString"
+        ],
+        "required": true
+      },
+      "refreshToken": {
+        "path": "@.refresh_token",
+        "transform": [
+          "toString"
+        ]
+      }
+    }
+  },
+  "notes": "Jet's web client calls this once on HTTP or body status 402 and replays the request (auth.user.refreshOn). Bogus values answer 200 {status:401} (Verified probe 6) = log in again."
+}
